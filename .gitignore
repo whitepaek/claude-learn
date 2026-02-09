@@ -1,0 +1,8 @@
+# Subprojects (independent git repositories)
+claude-code-tips/
+claude-cookbooks/
+everything-claude-code/
+oh-my-claudecode/
+
+# OMC state
+.omc/
