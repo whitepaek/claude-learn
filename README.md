@@ -14,14 +14,26 @@ Claude 및 Claude Code의 학습과 Best Practice 활용법을 배우기 위한 
 
 ## 시작하기 (Getting Started)
 
+### 1. 프로젝트 클론
+
 ```bash
 git clone https://github.com/whitepaek/claude-learn.git
 cd claude-learn
 ```
 
-프로젝트 디렉토리에서 Claude Code 세션을 시작한 뒤, 첫 메시지를 보내면 `CLAUDE.md`의 지침에 따라 하위 프로젝트를 자동으로 clone/pull 한다.
+### 2. 하위 프로젝트 초기화
 
-> `CLAUDE.md`는 자동 실행 스크립트가 아니라 Claude가 참고하는 지침 파일이다. 사용자가 세션에서 첫 대화를 시작해야 지침에 따른 동작이 수행된다.
+프로젝트 디렉토리에서 Claude Code를 실행하고, 하위 프로젝트 업데이트를 요청한다.
+
+```
+claude
+> 하위 프로젝트를 최신 상태로 업데이트해줘
+```
+
+`CLAUDE.md`에 정의된 지침에 따라 각 하위 프로젝트를 clone하거나 pull한다.
+
+> **참고**: `CLAUDE.md`는 자동 실행 스크립트가 아니라 Claude가 참고하는 **지침 파일**이다.
+> 세션이 시작되었다고 지침이 자동 실행되지 않으며, 위와 같이 사용자가 명시적으로 요청해야 동작한다.
 
 ## CLAUDE.md
 
