@@ -8,7 +8,15 @@ Claude 및 Claude Code의 학습과 Best Practice 활용법을 배우기 위해 
 
 ## 세션 시작 시 행동
 
-1. 하위 프로젝트 중 `.git` 디렉토리가 있는 프로젝트에 대해 `git pull`을 실행하여 최신 상태를 유지한다.
+1. 아래 하위 프로젝트 목록을 순회하며, 디렉토리가 **존재하지 않으면** `git clone`으로 받고, **존재하면** `git pull`로 최신 상태를 유지한다.
+
+| 디렉토리 | 원격 저장소 URL |
+|----------|----------------|
+| everything-claude-code | https://github.com/affaan-m/everything-claude-code.git |
+| oh-my-claudecode | https://github.com/Yeachan-Heo/oh-my-claudecode.git |
+| claude-cookbooks | https://github.com/anthropics/claude-cookbooks.git |
+| claude-code-tips | https://github.com/ykdojo/claude-code-tips.git |
+
 2. 사용자의 질문에 하위 프로젝트 내 자료만으로 충분하지 않을 경우, 아래 레퍼런스 링크를 `WebFetch`로 참조하여 최신 정보와 팁을 제공한다.
 
 ## 레퍼런스 링크
