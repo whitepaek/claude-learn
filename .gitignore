@@ -4,5 +4,8 @@ claude-cookbooks/
 everything-claude-code/
 oh-my-claudecode/
 
+# Claude Code local config
+.claude/
+
 # OMC state
 .omc/
