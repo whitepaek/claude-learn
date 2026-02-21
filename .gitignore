@@ -1,8 +1,10 @@
 # Subprojects (independent git repositories)
 claude-code-tips/
 claude-cookbooks/
+claude-plugins-official/
 everything-claude-code/
 oh-my-claudecode/
+spec-kit/
 
 # Claude Code local config
 .claude/
