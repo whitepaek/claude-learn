@@ -17,6 +17,7 @@ Claude 및 Claude Code의 학습과 Best Practice 활용법을 배우기 위해 
 | claude-cookbooks | https://github.com/anthropics/claude-cookbooks.git |
 | claude-code-tips | https://github.com/ykdojo/claude-code-tips.git |
 | spec-kit | https://github.com/github/spec-kit.git |
+| claude-plugins-official | https://github.com/anthropics/claude-plugins-official.git |
 
 2. 사용자의 질문에 하위 프로젝트 내 자료만으로 충분하지 않을 경우, 아래 레퍼런스 링크를 `WebFetch`로 참조하여 최신 정보와 팁을 제공한다.
 
@@ -50,3 +51,6 @@ Anthropic 공식 쿡북. Claude API 활용 Jupyter 노트북과 Python 예제 �
 
 ### spec-kit/
 GitHub 공식 Spec-Driven Development(SDD) 툴킷. 명세(Specification)를 먼저 작성하고 코드를 생성하는 방법론을 지원한다. `specify` CLI, 슬래시 커맨드(constitution, specify, clarify, plan, tasks, implement, analyze, checklist), 확장 시스템, 19개 이상의 AI 에이전트 통합(Claude Code, Copilot, Gemini 등)을 제공한다.
+
+### claude-plugins-official/
+Anthropic 공식 Claude Code 플러그인 디렉토리. 내부(Anthropic 개발) 플러그인과 외부(서드파티) 플러그인을 포함하며, LSP 통합(TypeScript, Go, Python, Rust, Swift 등), 코드 리뷰, PR 리뷰, 기능 개발, 플러그인 개발 도구 등 표준 플러그인 구조와 레퍼런스 구현을 참고할 수 있다.

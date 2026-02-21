@@ -12,6 +12,7 @@ Claude 및 Claude Code의 학습과 Best Practice 활용법을 배우기 위한 
 | `claude-cookbooks` | Anthropic 공식 쿡북. Claude API 활용 Jupyter 노트북과 Python 예제 모음. RAG, 분류, 요약, tool use, 멀티모달, Agent SDK 등 주제별 예제가 있다. | [GitHub](https://github.com/anthropics/claude-cookbooks) |
 | `claude-code-tips` | Claude Code 실전 팁 모음. 상태바 커스터마이징, Git 워크플로우, 컨테이너 활용, 시스템 프롬프트 최적화, TDD, 병렬화 등을 다룬다. | [GitHub](https://github.com/ykdojo/claude-code-tips) |
 | `spec-kit` | GitHub 공식 Spec-Driven Development(SDD) 툴킷. 명세를 먼저 작성하고 코드를 생성하는 방법론과 CLI, 슬래시 커맨드, 확장 시스템, 19개 이상의 AI 에이전트 통합을 제공한다. | [GitHub](https://github.com/github/spec-kit) |
+| `claude-plugins-official` | Anthropic 공식 Claude Code 플러그인 디렉토리. LSP 통합, 코드 리뷰, 기능 개발 등 표준 플러그인 구조와 레퍼런스 구현을 참고할 수 있다. | [GitHub](https://github.com/anthropics/claude-plugins-official) |
 
 ## 시작하기 (Getting Started)
 
