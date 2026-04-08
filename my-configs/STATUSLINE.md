@@ -11,7 +11,7 @@
         ─────────────  ─────────────  ──────────────
 [info]  claude-opus-4-6  v2.1.90
         ───────────────  ───────
-[repo]  ~/workspace/claude-learn  main
+[repo]  ~/workspace/claude-learn  main ↙2↗1
         ────────────────────────  ────
 ```
 
@@ -23,7 +23,7 @@
 | 2 | `[rate]` | 5h usage + remaining, 7d usage + reset datetime (with year) | stdin JSON (Pro/Max) |
 | 3 | `[cost]` | today cost, weekly cost, monthly cost | ccusage (`bun x`) |
 | 4 | `[info]` | model ID, Claude Code version | stdin JSON |
-| 5 | `[repo]` | working directory, branch (Cmd+click -> GitHub) | stdin JSON + git |
+| 5 | `[repo]` | working directory, branch (Cmd+click -> GitHub), pull/push counts | stdin JSON + git |
 
 ## Title Rules
 
@@ -65,6 +65,13 @@ Powerlevel10k Pure base + 256-color extensions.
 | Dim Yellow | 179 | 50-79% |
 | Dim Red | 131 | >= 80% |
 
+### Pull/Push Indicators
+
+| Color | Code | Item |
+|-------|------|------|
+| Blue | 4 | ↙ pull (behind remote) |
+| Green | 2 | ↗ push (ahead of remote) |
+
 ### ccusage Cost Gradient
 
 | Color | Code | Item |
@@ -92,8 +99,16 @@ Powerlevel10k Pure base + 256-color extensions.
 
 | Target | Cache File | TTL | Method |
 |--------|-----------|-----|--------|
-| Git | `/tmp/statusline-git-cache.json` | 5s | `git` CLI |
+| Git | `/tmp/statusline-git-cache.json` | 5s | `git` CLI (local refs) |
+| Git fetch | `/tmp/statusline-git-fetch.stamp` | 180s | `git fetch --quiet` (background, non-blocking) |
 | ccusage | `/tmp/statusline-ccusage-cache.json` | 300s | `bun x ccusage` x3 parallel (`ThreadPoolExecutor`) |
+
+### Git Auto Fetch
+
+- 180초(3분) 주기로 `git fetch`를 백그라운드 실행 (VS Code 기본값 기준)
+- `Popen` + `start_new_session=True`로 statusline 렌더링을 차단하지 않음
+- `/tmp/statusline-git-fetch.lock`으로 동시 실행 방지 (원자적 lock)
+- fetch 실패 시 silent 처리, 기존 로컬 상태 유지
 
 ## ccusage Cost Calculation
 
@@ -112,16 +127,17 @@ Options: `-m auto` (default), `--offline` (local pricing), `--json` (JSON output
 | `context_window.used_percentage` (null) | `ctx: --` (Grey) |
 | `rate_limits` (not in JSON) | `5h: --`, `7d: --` (Grey) |
 | `cost.total_duration_ms` (0) | `--` |
+| No upstream tracking branch | pull/push not shown |
 | Not a git repo | directory only |
 
 ## Code Structure
 
 ```
 statusline.py
-├── Colors          (13-41)   color constants
-├── Cache           (43-74)   read/write/stale check
-├── Rendering       (77-116)  block, underline, title, threshold_color, render_line
-├── Data sources    (119-191) get_git_info, get_ccusage_data
-├── Formatters      (194-228) fmt_cost, fmt_duration, fmt_pct, fmt_time_remaining, fmt_resets_at
-└── Main            (231-311) extract fields -> render 5 lines -> output
+├── Colors          (13-41)    color constants
+├── Cache           (43-78)    read/write/stale check, fetch constants
+├── Rendering       (81-120)   block, underline, title, threshold_color, render_line
+├── Data sources    (123-237)  maybe_background_fetch, get_git_info, get_ccusage_data
+├── Formatters      (240-275)  fmt_cost, fmt_duration, fmt_pct, fmt_time_remaining, fmt_resets_at
+└── Main            (278-367)  extract fields -> render 5 lines -> output
 ```

@@ -49,6 +49,10 @@ GIT_CACHE_TTL = 5
 CCUSAGE_CACHE = "/tmp/statusline-ccusage-cache.json"
 CCUSAGE_CACHE_TTL = 300
 
+FETCH_LOCK = "/tmp/statusline-git-fetch.lock"
+FETCH_STAMP = "/tmp/statusline-git-fetch.stamp"
+FETCH_TTL = 180
+
 _ANSI_RE = re.compile(r"\033\][^\a]*\a|\033\[[^m]*m")
 
 
@@ -119,13 +123,42 @@ def render_line(texts, colors):
 # ---------------------------------------------------------------------------
 # Data sources
 # ---------------------------------------------------------------------------
+def maybe_background_fetch(cwd):
+    """Fire-and-forget git fetch if TTL has expired and no fetch is already running."""
+    if os.path.exists(FETCH_STAMP):
+        if time.time() - os.path.getmtime(FETCH_STAMP) < FETCH_TTL:
+            return
+    try:
+        fd = os.open(FETCH_LOCK, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.close(fd)
+    except FileExistsError:
+        return
+    try:
+        subprocess.Popen(
+            ["git", "fetch", "--quiet", "--no-progress"],
+            cwd=cwd,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        open(FETCH_STAMP, "w").close()
+    except Exception:
+        pass
+    finally:
+        try:
+            os.unlink(FETCH_LOCK)
+        except OSError:
+            pass
+
+
 def get_git_info(cwd):
+    maybe_background_fetch(cwd)
     if not cache_is_stale(GIT_CACHE, GIT_CACHE_TTL):
         cached = read_cache(GIT_CACHE)
         if cached is not None:
             return cached
 
-    info = {"branch": "", "remote": ""}
+    info = {"branch": "", "remote": "", "behind": 0, "ahead": 0}
     try:
         subprocess.check_output(
             ["git", "rev-parse", "--is-inside-work-tree"],
@@ -148,6 +181,19 @@ def get_git_info(cwd):
             remote = re.sub(r"^git@github\.com:", "https://github.com/", remote)
             remote = re.sub(r"\.git$", "", remote)
             info["remote"] = remote
+        except Exception:
+            pass
+        try:
+            behind = subprocess.check_output(
+                ["git", "rev-list", "--count", "HEAD..@{u}"],
+                cwd=cwd, stderr=subprocess.DEVNULL, text=True,
+            ).strip()
+            ahead = subprocess.check_output(
+                ["git", "rev-list", "--count", "@{u}..HEAD"],
+                cwd=cwd, stderr=subprocess.DEVNULL, text=True,
+            ).strip()
+            info["behind"] = int(behind)
+            info["ahead"] = int(ahead)
         except Exception:
             pass
     except Exception:
@@ -286,7 +332,7 @@ def main():
         [BLUE, GREY_LO],
     )
 
-    # --- [repo] directory | branch (clickable) ---
+    # --- [repo] directory | branch (clickable) | pull/push ---
     repo_texts = [short_cwd]
     repo_colors = [GREY_LO]
     if git["branch"]:
@@ -294,6 +340,16 @@ def main():
         repo_texts.append(branch)
         repo_colors.append(GREY_LO)
     repo_line, repo_uline = render_line(repo_texts, repo_colors)
+
+    if git["branch"]:
+        behind, ahead = git.get("behind", 0), git.get("ahead", 0)
+        sync_parts = []
+        if behind > 0:
+            sync_parts.append(block(f"↙{behind}", BLUE))
+        if ahead > 0:
+            sync_parts.append(block(f"↗{ahead}", GREEN))
+        if sync_parts:
+            repo_line += " " + "".join(sync_parts)
 
     # --- Output ---
     for label, line, uline in [
