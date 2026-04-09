@@ -89,6 +89,18 @@ Powerlevel10k Pure base + 256-color extensions.
 | 50-79% | Dark Yellow (136) | Yellow (3) | Dim Yellow (179) |
 | >= 80% | Dark Red (88) | Red (1) | Dim Red (131) |
 
+### Underline `[!]` Marker
+
+밑줄 행에 `[!]`를 표시하여 임계값 초과를 시각적으로 강조한다.
+
+| 항목 | 조건 | 밑줄 예시 |
+|------|------|----------|
+| ctx | >= 50% (주의 이상) | `[!] ────` |
+| 5h | >= 80% (위험) | `[!] ─────────────────` |
+| 7d | >= 80% (위험) | `[!] ─────────────────` |
+
+조건 미달 시 기존 `────────` 밑줄 유지.
+
 ## Underline Rules
 
 - `─` chars matching visible text length (ANSI codes excluded)

@@ -94,8 +94,10 @@ def block(text, color):
     return f"\033[38;5;{color}m{text}{RESET}"
 
 
-def underline(text, color):
+def underline(text, color, marker=False):
     visible_len = len(_ANSI_RE.sub("", text))
+    if marker:
+        return f"\033[38;5;{color}m[!] {'─' * max(visible_len - 4, 0)}{RESET}"
     return f"\033[38;5;{color}m{'─' * visible_len}{RESET}"
 
 
@@ -114,9 +116,11 @@ def threshold_color(pct, level="standard"):
     return t["low"]
 
 
-def render_line(texts, colors):
+def render_line(texts, colors, markers=None):
+    if markers is None:
+        markers = [False] * len(texts)
     line = "  ".join(block(t, c) for t, c in zip(texts, colors))
-    uline = "  ".join(underline(t, c) for t, c in zip(texts, colors))
+    uline = "  ".join(underline(t, c, m) for t, c, m in zip(texts, colors, markers))
     return line, uline
 
 
@@ -299,9 +303,11 @@ def main():
     ccusage = get_ccusage_data()
 
     # --- [sess] context | session cost | duration ---
+    ctx_marker = used_pct is not None and used_pct >= 50
     sess_line, sess_uline = render_line(
         [f"ctx: {fmt_pct(used_pct)}", fmt_cost(cost_usd), fmt_duration(duration_ms)],
         [threshold_color(used_pct, "dark"), MAGENTA, CYAN],
+        markers=[ctx_marker, False, False],
     )
 
     # --- [rate] 5h | 7d ---
@@ -315,9 +321,12 @@ def main():
     if reset:
         seven_d_text += f" ({reset})"
 
+    five_h_pct = five_h.get("used_percentage")
+    seven_d_pct = seven_d.get("used_percentage")
     rate_line, rate_uline = render_line(
         [five_h_text, seven_d_text],
-        [threshold_color(five_h.get("used_percentage")), threshold_color(seven_d.get("used_percentage"), "dim")],
+        [threshold_color(five_h_pct), threshold_color(seven_d_pct, "dim")],
+        markers=[five_h_pct is not None and five_h_pct >= 80, seven_d_pct is not None and seven_d_pct >= 80],
     )
 
     # --- [cost] today | week | month ---
