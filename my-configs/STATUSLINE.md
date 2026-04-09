@@ -1,6 +1,72 @@
 # Statusline
 
-## Layout (10 lines)
+## Table of Contents
+
+- [1. Getting Started](#1-getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Setup](#setup)
+- [2. Layout](#2-layout)
+  - [Overview](#overview)
+  - [Lines](#lines)
+  - [Title Rules](#title-rules)
+  - [Underline Rules](#underline-rules)
+- [3. Color & Threshold](#3-color--threshold)
+  - [Color Palette](#color-palette)
+  - [3-Tier Threshold](#3-tier-threshold)
+  - [Underline \[!\] Marker](#underline--marker)
+- [4. Data Sources](#4-data-sources)
+  - [Caching](#caching)
+  - [Git Auto Fetch](#git-auto-fetch)
+  - [ccusage Cost Calculation](#ccusage-cost-calculation)
+- [5. Reference](#5-reference)
+  - [Conditional Field Handling](#conditional-field-handling)
+  - [Code Structure](#code-structure)
+
+---
+
+## 1. Getting Started
+
+### Prerequisites
+
+| 항목 | 확인 명령어 | 설치 |
+|------|-----------|------|
+| Python 3 | `python3 --version` | macOS 기본 포함 |
+| Git | `git --version` | macOS 기본 포함 |
+| Bun | `bun --version` | `curl -fsSL https://bun.sh/install \| bash` |
+
+- ccusage는 `bun x ccusage`로 실행되므로 별도 설치 불필요
+- Python 추가 패키지 없음 (표준 라이브러리만 사용)
+
+### Setup
+
+#### 1. statusline.py 배치
+
+```bash
+cp statusline.py ~/.claude/statusline.py
+```
+
+#### 2. settings.json 설정
+
+`~/.claude/settings.json`에 아래 항목을 추가한다.
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "python3 ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/statusline.py"
+  }
+}
+```
+
+#### 3. 적용 확인
+
+Claude Code를 재시작하면 statusline이 표시된다.
+
+---
+
+## 2. Layout
+
+### Overview
 
 ```
 [sess]  ctx: 10%  $1.23  12m 34s
@@ -15,7 +81,7 @@
         ────────────────────────  ────
 ```
 
-## Lines
+### Lines
 
 | Line | Title | Items | Source |
 |------|-------|-------|--------|
@@ -25,18 +91,28 @@
 | 4 | `[info]` | model ID, Claude Code version | stdin JSON |
 | 5 | `[repo]` | working directory, branch (Cmd+click -> GitHub), pull/push counts | stdin JSON + git |
 
-## Title Rules
+### Title Rules
 
 - 4-char uniform: `sess`, `rate`, `cost`, `info`, `repo`
 - Format: `[xxxx]` + 2 spaces (8 visible chars total)
 - Color: Grey (242)
 - Underline row: ANSI-wrapped 6 grey spaces + 2 normal spaces (trim prevention)
 
-## Color Palette
+### Underline Rules
+
+- `─` chars matching visible text length (ANSI codes excluded)
+- Same color as the item above
+- 2-space gap between items
+
+---
+
+## 3. Color & Threshold
+
+### Color Palette
 
 Powerlevel10k Pure base + 256-color extensions.
 
-### Pure Base
+#### Pure Base
 
 | Color | Code | Items |
 |-------|------|-------|
@@ -49,7 +125,7 @@ Powerlevel10k Pure base + 256-color extensions.
 | Grey | 242 | titles, null fallback |
 | Grey LO | 245 | directory, branch, version |
 
-### ctx Threshold (dark)
+#### ctx Threshold (dark)
 
 | Color | Code | Threshold |
 |-------|------|-----------|
@@ -57,7 +133,7 @@ Powerlevel10k Pure base + 256-color extensions.
 | Dark Yellow | 136 | 50-79% |
 | Dark Red | 88 | >= 80% |
 
-### 7d Threshold (dim)
+#### 7d Threshold (dim)
 
 | Color | Code | Threshold |
 |-------|------|-----------|
@@ -65,14 +141,14 @@ Powerlevel10k Pure base + 256-color extensions.
 | Dim Yellow | 179 | 50-79% |
 | Dim Red | 131 | >= 80% |
 
-### Pull/Push Indicators
+#### Pull/Push Indicators
 
 | Color | Code | Item |
 |-------|------|------|
 | Blue | 4 | ↙ pull (behind remote) |
 | Green | 2 | ↗ push (ahead of remote) |
 
-### ccusage Cost Gradient
+#### ccusage Cost Gradient
 
 | Color | Code | Item |
 |-------|------|------|
@@ -80,7 +156,7 @@ Powerlevel10k Pure base + 256-color extensions.
 | Gold | 179 | week |
 | Salmon | 173 | month |
 
-## 3-Tier Threshold (importance-based brightness)
+### 3-Tier Threshold
 
 | Threshold | ctx (dark, high) | 5h (standard, mid) | 7d (dim, low) |
 |-----------|-----------------|--------------------|--------------| 
@@ -101,13 +177,11 @@ Powerlevel10k Pure base + 256-color extensions.
 
 조건 미달 시 기존 `────────` 밑줄 유지.
 
-## Underline Rules
+---
 
-- `─` chars matching visible text length (ANSI codes excluded)
-- Same color as the item above
-- 2-space gap between items
+## 4. Data Sources
 
-## Caching
+### Caching
 
 | Target | Cache File | TTL | Method |
 |--------|-----------|-----|--------|
@@ -122,7 +196,7 @@ Powerlevel10k Pure base + 256-color extensions.
 - `/tmp/statusline-git-fetch.lock`으로 동시 실행 방지 (원자적 lock)
 - fetch 실패 시 silent 처리, 기존 로컬 상태 유지
 
-## ccusage Cost Calculation
+### ccusage Cost Calculation
 
 | Command | Range | `--since` |
 |---------|-------|-----------|
@@ -132,7 +206,11 @@ Powerlevel10k Pure base + 256-color extensions.
 
 Options: `-m auto` (default), `--offline` (local pricing), `--json` (JSON output)
 
-## Conditional Field Handling
+---
+
+## 5. Reference
+
+### Conditional Field Handling
 
 | Field | When absent |
 |-------|------------|
@@ -142,7 +220,7 @@ Options: `-m auto` (default), `--offline` (local pricing), `--json` (JSON output
 | No upstream tracking branch | pull/push not shown |
 | Not a git repo | directory only |
 
-## Code Structure
+### Code Structure
 
 ```
 statusline.py
