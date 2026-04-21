@@ -204,7 +204,9 @@ Powerlevel10k Pure base + 256-color extensions.
 | `bun x ccusage weekly` | last 7 days | 7 days ago |
 | `bun x ccusage monthly` | this month | YYYYMM01 |
 
-Options: `-m auto` (default), `--offline` (local pricing), `--json` (JSON output)
+Options: `-m auto` (default), `--json` (JSON output)
+
+> `--offline` 플래그는 사용하지 않는다. 오프라인 가격 DB에는 최신 모델(예: `claude-opus-4-7`)이 포함되지 않아 `totalCost: 0`이 반환될 수 있다. 네트워크 호출로 LiteLLM 최신 가격을 조회하되, 300s 자체 캐시와 예외 fallback(`$0.00`)으로 완화한다.
 
 ---
 

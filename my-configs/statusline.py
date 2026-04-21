@@ -226,9 +226,9 @@ def get_ccusage_data():
 
     now = datetime.now()
     commands = {
-        "today": ["daily", "--since", now.strftime("%Y%m%d"), "--json", "--offline"],
-        "week":  ["weekly", "--since", (now - timedelta(days=7)).strftime("%Y%m%d"), "--json", "--offline"],
-        "month": ["monthly", "--since", now.strftime("%Y%m01"), "--json", "--offline"],
+        "today": ["daily", "--since", now.strftime("%Y%m%d"), "--json"],
+        "week":  ["weekly", "--since", (now - timedelta(days=7)).strftime("%Y%m%d"), "--json"],
+        "month": ["monthly", "--since", now.strftime("%Y%m01"), "--json"],
     }
 
     costs = {"today": 0, "week": 0, "month": 0}
